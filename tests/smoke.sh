@@ -49,7 +49,7 @@ check "page shows the new canonical" 'grep -Eq "rel=\"canonical\" href=\"$canon\
 # Separately: Yoast leaves the canonical out of noindex pages.
 res=$(api POST "/page/$id" -d '{"noindex":true}')
 ids="$ids $(jq -r '.changes[0].id' <<<"$res")"
-check "page is noindex" 'html | grep -Eiq "name=.robots.[^>]*noindex"'
+check "page is noindex" 'grep -Eiq "name=.robots.[^>]*noindex" <<<"$(html)"'
 
 again=$(api POST "/page/$id" -d "{\"title\":\"$title\"}")
 check "setting the same value records nothing" '[ "$(jq ".changes | length" <<<"$again")" = 0 ]'
@@ -61,7 +61,7 @@ if [ -n "$src" ]; then
     img=$(api POST /image -d "{\"src\":\"$src\",\"alt\":\"$alt\"}")
     alt_change=$(jq -r '.changes[0].id // empty' <<<"$img")
     check "alt set from the resized image URL (media $(jq -r .image.id <<<"$img"))" '[ -n "$alt_change" ]'
-    check "page shows the alt on the image already in the content" 'html | grep -q "alt=\"$alt\""'
+    check "page shows the alt on the image already in the content" 'grep -qF "alt=\"$alt\"" <<<"$(html)"'
 fi
 
 # Redirect.

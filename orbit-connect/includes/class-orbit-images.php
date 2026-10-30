@@ -44,6 +44,26 @@ class Orbit_Images {
 		return 0;
 	}
 
+	/**
+	 * The media item for an image address on this site, or 0. Remembered for
+	 * the request, and only looked up for addresses under the uploads folder,
+	 * so pages with many images stay quick.
+	 */
+	public static function library_image_for_src( $src ) {
+		static $seen = array();
+		if ( '' === $src ) {
+			return 0;
+		}
+		if ( isset( $seen[ $src ] ) ) {
+			return $seen[ $src ];
+		}
+		$uploads = wp_get_upload_dir();
+		$path    = wp_parse_url( $src, PHP_URL_PATH );
+		$base    = wp_parse_url( $uploads['baseurl'], PHP_URL_PATH );
+		$seen[ $src ] = ( $path && $base && 0 === strpos( $path, $base ) ) ? self::attachment_for_src( $src ) : 0;
+		return $seen[ $src ];
+	}
+
 	public static function read( $attachment_id ) {
 		return array(
 			'id'  => (int) $attachment_id,
@@ -94,12 +114,20 @@ class Orbit_Images {
 		return $images;
 	}
 
+	/**
+	 * Fills an empty alt from the media library. Page builders (WPBakery,
+	 * Porto, Divi…) print their images without WordPress's wp-image-N class
+	 * and often with alt="", so those are matched by their address instead.
+	 */
 	public static function fill_empty_alt( $tag, $context, $attachment_id ) {
-		if ( ! $attachment_id ) {
-			return $tag;
-		}
 		$alt = self::attr( $tag, 'alt' );
 		if ( null !== $alt && '' !== trim( $alt ) ) {
+			return $tag;
+		}
+		if ( ! $attachment_id ) {
+			$attachment_id = self::library_image_for_src( (string) self::attr( $tag, 'src' ) );
+		}
+		if ( ! $attachment_id ) {
 			return $tag;
 		}
 		$media_alt = trim( (string) get_post_meta( $attachment_id, self::ALT_KEY, true ) );

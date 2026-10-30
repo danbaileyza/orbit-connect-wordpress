@@ -19,7 +19,7 @@ Application passwords need HTTPS (or a site marked `WP_ENVIRONMENT_TYPE` `local`
 | Description | `_yoast_wpseo_metadesc` | `rank_math_description` | `_orbit_seo_description`, printed in `wp_head` |
 | Canonical | `_yoast_wpseo_canonical` | `rank_math_canonical_url` | `_orbit_seo_canonical`, via `get_canonical_url` |
 | Noindex | `_yoast_wpseo_meta-robots-noindex` | `rank_math_robots` | `_orbit_seo_noindex`, via `wp_robots` |
-| Image alt | `_wp_attachment_image_alt` on the media item; empty `alt` on images already in page content is filled from it when the page is shown (`wp_content_img_tag`) | same | same |
+| Image alt | `_wp_attachment_image_alt` on the media item; an empty `alt` on images in page content, page-builder images included, is filled from it when the page is shown (`wp_content_img_tag`) | same | same |
 | Redirects | the plugin's own list (`orbit_connect_redirects`), served on `template_redirect` | same | same |
 
 Notes from testing:
@@ -31,6 +31,7 @@ Notes from testing:
 
 - `GET status` — versions, active SEO plugin and any problem with it
 - `GET page?url=…` / `GET page/{id}` — the page's SEO fields and images
+- `POST media/lookup` — `{srcs: [...]}`: which image addresses (as a page shows them) are in the media library, with their alt text (1.1)
 - `POST page/{id}` — `{title?, description?, canonical?, noindex?, note?}`; empty text or `null` clears the page's own value
 - `POST image` — `{id | src, alt}`; `src` can be a resized copy (`-300x200.jpg`)
 - `GET redirects`, `POST redirects` — `{from, to, code}`

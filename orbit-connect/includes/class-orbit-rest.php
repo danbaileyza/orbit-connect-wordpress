@@ -53,6 +53,14 @@ class Orbit_REST {
 				'note' => array( 'type' => 'string', 'maxLength' => 255 ),
 			),
 		) );
+		register_rest_route( self::NS, '/media/lookup', array(
+			'methods'             => 'POST',
+			'callback'            => array( __CLASS__, 'lookup_media' ),
+			'permission_callback' => $admin,
+			'args'                => array(
+				'srcs' => array( 'required' => true, 'type' => 'array', 'items' => array( 'type' => 'string' ), 'maxItems' => 200 ),
+			),
+		) );
 		register_rest_route( self::NS, '/redirects', array(
 			array(
 				'methods'             => 'GET',
@@ -107,7 +115,7 @@ class Orbit_REST {
 			'seo_plugin_version' => Orbit_SEO_Fields::active_plugin_version(),
 			'seo_plugin_problem' => Orbit_SEO_Fields::active_plugin_problem(),
 			'user'               => $user->user_login,
-			'features'           => array( 'seo_fields', 'image_alt', 'redirects', 'undo' ),
+			'features'           => array( 'seo_fields', 'image_alt', 'media_lookup', 'redirects', 'undo' ),
 		);
 	}
 
@@ -175,6 +183,23 @@ class Orbit_REST {
 			'changes' => $change ? array( $change ) : array(),
 			'image'   => Orbit_Images::read( $id ),
 		);
+	}
+
+	/**
+	 * Which of these image addresses (as a page shows them) are in the media
+	 * library, with their alt text. Read only.
+	 */
+	public static function lookup_media( WP_REST_Request $request ) {
+		$out = array();
+		foreach ( array_unique( array_map( 'strval', (array) $request->get_param( 'srcs' ) ) ) as $src ) {
+			$id    = Orbit_Images::attachment_for_src( $src );
+			$out[] = array(
+				'src' => $src,
+				'id'  => $id,
+				'alt' => $id ? (string) get_post_meta( $id, Orbit_Images::ALT_KEY, true ) : null,
+			);
+		}
+		return $out;
 	}
 
 	public static function list_redirects() {

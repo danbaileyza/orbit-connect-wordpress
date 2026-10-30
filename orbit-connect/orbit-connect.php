@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       Orbit Connect
  * Description:       Lets Orbit read and set SEO titles, descriptions, canonicals, noindex, image alt text and redirects, keeping every previous value so a change can be undone.
- * Version:           1.0.0
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            DevLabs
@@ -16,7 +16,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ORBIT_CONNECT_VERSION', '1.0.0' );
+define( 'ORBIT_CONNECT_VERSION', '1.1.0' );
 define( 'ORBIT_CONNECT_DB_VERSION', '1' );
 
 require_once __DIR__ . '/includes/class-orbit-changes.php';
