@@ -1,6 +1,6 @@
 # Orbit Connect (WordPress plugin)
 
-Lets Orbit apply approved SEO fixes to a WordPress site: SEO title, meta description, canonical, noindex, image alt text and redirects. Every change is logged on the site with its previous value, so Orbit can undo it.
+Lets Orbit check a WordPress site's health and apply approved SEO fixes to it: SEO title, meta description, canonical, noindex, image alt text and redirects. Every change is logged on the site with its previous value, so Orbit can undo it.
 
 ## Install on a site
 
@@ -30,6 +30,7 @@ Notes from testing:
 ## API (`/wp-json/orbit/v1`, administrator only)
 
 - `GET status` — versions, active SEO plugin and any problem with it
+- `GET health` — WordPress's Site Health results, plugins and themes with updates, server, database (autoload, transients, revisions), scheduled tasks and security settings (1.2). Read only; takes a few seconds
 - `GET page?url=…` / `GET page/{id}` — the page's SEO fields and images
 - `POST media/lookup` — `{srcs: [...]}`: which image addresses (as a page shows them) are in the media library, with their alt text (1.1)
 - `POST page/{id}` — `{title?, description?, canonical?, noindex?, note?}`; empty text or `null` clears the page's own value
