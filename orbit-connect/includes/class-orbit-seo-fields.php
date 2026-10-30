@@ -189,7 +189,8 @@ class Orbit_SEO_Fields {
 
 	public static function filter_title( $title ) {
 		$own = self::own_value( 'title' );
-		return '' !== $own ? $own : $title;
+		// pre_get_document_title skips WordPress's own escaping.
+		return '' !== $own ? esc_html( $own ) : $title;
 	}
 
 	public static function print_description() {
