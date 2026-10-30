@@ -27,6 +27,10 @@ echo "SEO plugin: $plugin ($(jq -r .seo_plugin_version <<<"$status")), WordPress
 check "anonymous request is refused" '[ "$(curl -s -o /dev/null -w "%{http_code}" "$API/status")" = 401 ]'
 check "wrong password is refused" '[ "$(curl -s -o /dev/null -w "%{http_code}" -u "$WP_USER:wrong wrong wrong" "$API/status")" = 401 ]'
 
+health=$(api GET /health)
+check "health runs WordPress's Site Health ($(jq '.site_health | length' <<<"$health") tests)" '[ "$(jq ".site_health | length" <<<"$health")" -ge 15 ]'
+check "health lists plugins with Orbit Connect active" '[ "$(jq "[.plugins[] | select(.slug == \"orbit-connect\" and .active)] | length" <<<"$health")" = 1 ]'
+
 page=$(api GET "/page?url=$WP_URL$PAGE_PATH")
 id=$(jq -r .id <<<"$page")
 check "page resolves from its URL (id $id)" '[ "$id" -gt 0 ] 2>/dev/null'

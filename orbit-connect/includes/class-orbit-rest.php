@@ -53,6 +53,11 @@ class Orbit_REST {
 				'note' => array( 'type' => 'string', 'maxLength' => 255 ),
 			),
 		) );
+		register_rest_route( self::NS, '/health', array(
+			'methods'             => 'GET',
+			'callback'            => array( 'Orbit_Health', 'report' ),
+			'permission_callback' => $admin,
+		) );
 		register_rest_route( self::NS, '/media/lookup', array(
 			'methods'             => 'POST',
 			'callback'            => array( __CLASS__, 'lookup_media' ),
@@ -115,7 +120,7 @@ class Orbit_REST {
 			'seo_plugin_version' => Orbit_SEO_Fields::active_plugin_version(),
 			'seo_plugin_problem' => Orbit_SEO_Fields::active_plugin_problem(),
 			'user'               => $user->user_login,
-			'features'           => array( 'seo_fields', 'image_alt', 'media_lookup', 'redirects', 'undo' ),
+			'features'           => array( 'seo_fields', 'image_alt', 'media_lookup', 'health', 'redirects', 'undo' ),
 		);
 	}
 
