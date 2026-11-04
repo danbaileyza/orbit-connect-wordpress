@@ -4,12 +4,22 @@ Lets Orbit check a WordPress site's health and apply approved SEO fixes to it: S
 
 ## Install on a site
 
-1. Zip the plugin folder: `cd integrations/wordpress && zip -r orbit-connect.zip orbit-connect`
-2. WordPress → Plugins → Add New → Upload Plugin → choose `orbit-connect.zip` → Activate.
+1. Download `orbit-connect.zip` from the [latest release](https://github.com/danbaileyza/orbit-connect-wordpress/releases/latest).
+2. WordPress → Plugins → Add New → Upload Plugin → choose `orbit-connect.zip` → Activate. (Over an older copy, choose Replace current with uploaded.)
 3. Users → Profile (an administrator) → Application Passwords → name it "Orbit" → Add. Copy the password once.
 4. Orbit → Connectors → WordPress → Add site: the site address, that username, and the application password.
 
 Application passwords need HTTPS (or a site marked `WP_ENVIRONMENT_TYPE` `local`). Revoke the password in the same screen to cut Orbit off.
+
+## Updates
+
+From 1.3.0 the plugin updates itself from this repository's releases: WordPress shows "update available" on the Plugins screen within about 12 hours of a release (Dashboard → Updates → Check again to look now), and sites with auto-updates turned on for it install it themselves. The plugin's `Update URI` header points here, so WordPress.org is never asked about it. Sites on 1.2.0 or older need 1.3.0 uploaded once by hand.
+
+To release a version:
+
+1. Change `Version:` in the plugin header and `ORBIT_CONNECT_VERSION` in `orbit-connect/orbit-connect.php`, and commit.
+2. Tag it with notes, which become the release notes: `git tag -a v1.4.0 -m "What changed"`, then `git push origin main v1.4.0`.
+3. The Release workflow checks the tag matches both versions and every PHP file parses, then publishes the release with `orbit-connect.zip`.
 
 ## Where values go
 

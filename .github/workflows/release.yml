@@ -1,0 +1,36 @@
+# Pushing a tag like v1.4.0 publishes that version: the tag must match the
+# plugin's Version header and ORBIT_CONNECT_VERSION, every PHP file must
+# parse, and the release gets orbit-connect.zip, which sites update from.
+name: Release
+
+on:
+  push:
+    tags: ['v*.*.*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the version matches the tag
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          header=$(sed -n 's/^ \* Version: *//p' orbit-connect/orbit-connect.php)
+          constant=$(sed -n "s/^define( 'ORBIT_CONNECT_VERSION', '\(.*\)' );/\1/p" orbit-connect/orbit-connect.php)
+          echo "tag $tag, header $header, constant $constant"
+          [ "$tag" = "$header" ] && [ "$tag" = "$constant" ]
+
+      - name: Check every PHP file parses
+        run: find orbit-connect -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Build orbit-connect.zip
+        run: zip -r -X orbit-connect.zip orbit-connect
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" orbit-connect.zip --title "Orbit Connect ${GITHUB_REF_NAME#v}" --notes-from-tag --verify-tag
