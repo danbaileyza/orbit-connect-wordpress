@@ -16,6 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Checkout leaves the tag without its message; fetch it so the
+      # release notes are the tag's notes, not the commit's.
+      - name: Fetch the tag's notes
+        run: git fetch --force origin "refs/tags/${GITHUB_REF_NAME}:refs/tags/${GITHUB_REF_NAME}"
+
       - name: Check the version matches the tag
         run: |
           tag="${GITHUB_REF_NAME#v}"
